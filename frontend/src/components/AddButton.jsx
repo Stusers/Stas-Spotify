@@ -1,4 +1,3 @@
-// components/AddButton.jsx
 import { useState } from 'react';
 import './AddButton.css';
 
@@ -9,7 +8,7 @@ function AddButton({ type, onAdd, fields }) {
     const handleOpenModal = () => {
         setIsModalOpen(true);
 
-        // Initialize form data with empty values
+
         const initialData = {};
         fields.forEach(field => {
             initialData[field.name] = field.type === 'number' ? '' : '';
@@ -32,7 +31,7 @@ function AddButton({ type, onAdd, fields }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Process form data for submission
+
         const processedData = { ...formData };
         fields.forEach(field => {
             if (field.type === 'number' && processedData[field.name] !== '') {

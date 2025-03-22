@@ -1,10 +1,6 @@
-import db from "../config/dbConfig.js"; // Import MySQL connection
+import db from "../config/dbConfig.js";
 
-//
-// ─── ARTIST CONTROLLERS ───────────────────────────────────────────────────────
-//
 
-// Get all artists
 export const getArtists = async (req, res) => {
     try {
         const [rows] = await db.query("SELECT * FROM artists");
@@ -15,7 +11,7 @@ export const getArtists = async (req, res) => {
     }
 };
 
-// Get a single artist by ID
+
 export const getArtistById = async (req, res) => {
     try {
         const [rows] = await db.query("SELECT * FROM artists WHERE id = ?", [req.params.id]);
@@ -27,7 +23,7 @@ export const getArtistById = async (req, res) => {
     }
 };
 
-// Create a new artist
+
 export const createArtist = async (req, res) => {
     try {
         const { name, monthly_listeners, genre, image_link } = req.body;
@@ -41,7 +37,7 @@ export const createArtist = async (req, res) => {
     }
 };
 
-// Update an artist
+
 export const updateArtist = async (req, res) => {
     try {
         const { name, monthly_listeners, genre, image_link } = req.body;
@@ -55,7 +51,7 @@ export const updateArtist = async (req, res) => {
     }
 };
 
-// Delete an artist
+
 export const deleteArtist = async (req, res) => {
     try {
         await db.query("DELETE FROM artists WHERE id = ?", [req.params.id]);
@@ -66,11 +62,6 @@ export const deleteArtist = async (req, res) => {
     }
 };
 
-//
-// ─── ALBUM CONTROLLERS ────────────────────────────────────────────────────────
-//
-
-// Get all albums
 export const getAlbums = async (req, res) => {
     try {
         const [rows] = await db.query("SELECT * FROM albums");
@@ -81,7 +72,6 @@ export const getAlbums = async (req, res) => {
     }
 };
 
-// Get a single album by ID
 export const getAlbumById = async (req, res) => {
     try {
         const [rows] = await db.query("SELECT * FROM albums WHERE id = ?", [req.params.id]);
@@ -93,7 +83,6 @@ export const getAlbumById = async (req, res) => {
     }
 };
 
-// Create a new album
 export const createAlbum = async (req, res) => {
     try {
         const { name, artist_id, release_year, number_of_listens, image_link } = req.body;
@@ -107,7 +96,6 @@ export const createAlbum = async (req, res) => {
     }
 };
 
-// Update an album
 export const updateAlbum = async (req, res) => {
     try {
         const { name, artist_id, release_year, number_of_listens, image_link } = req.body;
@@ -121,7 +109,6 @@ export const updateAlbum = async (req, res) => {
     }
 };
 
-// Delete an album
 export const deleteAlbum = async (req, res) => {
     try {
         await db.query("DELETE FROM albums WHERE id = ?", [req.params.id]);
@@ -132,11 +119,6 @@ export const deleteAlbum = async (req, res) => {
     }
 };
 
-//
-// ─── SONG CONTROLLERS ─────────────────────────────────────────────────────────
-//
-
-// Get all songs
 export const getSongs = async (req, res) => {
     try {
         const [rows] = await db.query("SELECT * FROM songs");
@@ -147,7 +129,6 @@ export const getSongs = async (req, res) => {
     }
 };
 
-// Get a single song by ID
 export const getSongById = async (req, res) => {
     try {
         const [rows] = await db.query("SELECT * FROM songs WHERE id = ?", [req.params.id]);
@@ -159,7 +140,6 @@ export const getSongById = async (req, res) => {
     }
 };
 
-// Create a new song
 export const createSong = async (req, res) => {
     try {
         const { name, release_year, album_id, artist_id, image_link } = req.body;
@@ -173,7 +153,6 @@ export const createSong = async (req, res) => {
     }
 };
 
-// Update a song
 export const updateSong = async (req, res) => {
     try {
         const { name, release_year, album_id, artist_id, image_link } = req.body;
@@ -187,7 +166,6 @@ export const updateSong = async (req, res) => {
     }
 };
 
-// Delete a song
 export const deleteSong = async (req, res) => {
     try {
         await db.query("DELETE FROM songs WHERE id = ?", [req.params.id]);

@@ -1,6 +1,4 @@
-/* index.css */
 
-/* === GLOBAL CSS VARIABLES === */
 :root {
   --primary-color: #0077cc;
   --secondary-color: #a3d3ff;
@@ -13,7 +11,6 @@
   --error-color: #f44336;
 }
 
-/* === RESETS === */
 * {
   margin: 0;
   padding: 0;
@@ -26,7 +23,6 @@ body {
   color: var(--text-color);
 }
 
-/* === HEADER === */
 .app-header {
   display: flex;
   align-items: center;
@@ -56,7 +52,6 @@ body {
   color: var(--accent-color);
 }
 
-/* === APP CONTAINER === */
 .app {
   margin-top: 30px;
   padding: 0 40px 100px 60px;
@@ -65,12 +60,10 @@ body {
   margin-right: auto;
 }
 
-/* === HEADINGS === */
 h1, h2, h3 {
   color: var(--accent-color);
 }
 
-/* === SECTIONS === */
 .section-container {
   margin-bottom: 50px;
 }
@@ -84,7 +77,6 @@ h1, h2, h3 {
   border-bottom: 2px solid var(--primary-color);
 }
 
-/* === CARD STYLES === */
 .card {
   background-color: var(--card-background);
   border-radius: 15px;
@@ -138,7 +130,6 @@ h1, h2, h3 {
   color: #888;
 }
 
-/* === BUTTONS === */
 button {
   font-family: inherit;
   font-size: 0.95rem;
@@ -155,7 +146,6 @@ button:hover {
   background-color: var(--accent-color);
 }
 
-/* === STATUS TEXT === */
 .loading, .error {
   text-align: center;
   padding: 50px;
@@ -180,7 +170,6 @@ button:hover {
   z-index: 1000;
 }
 
-/* === RESPONSIVENESS === */
 @media (max-width: 600px) {
   .logo-text {
     font-size: 1.2rem;

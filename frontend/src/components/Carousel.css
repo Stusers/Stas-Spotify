@@ -1,9 +1,9 @@
 .carousel-container {
     position: relative;
     width: 100%;
-    overflow: visible; /* allow arrows to stick out */
+    overflow: visible;
     margin: 0 auto;
-    padding: 20px 60px; /* space around content */
+    padding: 20px 60px;
 }
 
 .carousel {
@@ -14,7 +14,7 @@
     padding-bottom: 10px;
     scrollbar-width: none;
     position: relative;
-    z-index: 1; /* keep it under the arrows */
+    z-index: 1;
 }
 
 .carousel::-webkit-scrollbar {

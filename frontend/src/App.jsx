@@ -133,9 +133,12 @@ function App() {
 function HomePage({ artists, albums, songs, handleAdd }) {
     return (
         <main>
-            <EntitySection title="Artists" type="artists" items={artists} handleAdd={handleAdd} />
-            <EntitySection title="Albums" type="albums" items={albums} handleAdd={handleAdd} />
             <EntitySection title="Songs" type="songs" items={songs} handleAdd={handleAdd} />
+
+            <EntitySection title="Albums" type="albums" items={albums} handleAdd={handleAdd} />
+
+            <EntitySection title="Artists" type="artists" items={artists} handleAdd={handleAdd} />
+
         </main>
     );
 }

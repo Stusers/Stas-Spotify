@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 
+//We make a lil pool so we connect all good
+
 const pool = mysql.createPool({
     host: process.env.DB_HOST,     // e.g., 'localhost'
     user: process.env.DB_USER,     // e.g., 'root'
