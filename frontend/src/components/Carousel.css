@@ -1,0 +1,78 @@
+.carousel-container {
+    position: relative;
+    width: 100%;
+    overflow: visible; /* allow arrows to stick out */
+    margin: 0 auto;
+    padding: 20px 60px; /* space around content */
+}
+
+.carousel {
+    display: flex;
+    gap: 30px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding-bottom: 10px;
+    scrollbar-width: none;
+    position: relative;
+    z-index: 1; /* keep it under the arrows */
+}
+
+.carousel::-webkit-scrollbar {
+    display: none;
+}
+
+.carousel-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.85;
+    z-index: 2; /* ensure arrows sit above everything */
+    font-size: 1.2rem;
+    transition: background-color 0.3s, opacity 0.3s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.carousel-button:hover {
+    opacity: 1;
+    background-color: var(--primary-color);
+}
+
+.carousel-button.left {
+    left: 0;
+    transform: translateX(-100%) translateY(-50%);
+}
+
+.carousel-button.right {
+    right: 0;
+    transform: translateX(100%) translateY(-50%);
+}
+
+.carousel-button:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+@media (max-width: 1400px) {
+    .carousel-container {
+        padding: 20px;
+    }
+
+    .carousel {
+        gap: 20px;
+    }
+
+    .carousel-button {
+        display: none;
+    }
+}

@@ -1,0 +1,82 @@
+/* components/DetailView.css */
+.detail-view {
+    padding: 20px;
+    color: var(--text-color);
+}
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.back-button {
+    background: none;
+    border: none;
+    color: var(--accent-color);
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.detail-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.edit-button,
+.delete-button,
+.save-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.edit-button.active {
+    background-color: var(--accent-color);
+}
+
+.delete-button {
+    background-color: var(--error-color);
+}
+
+.save-button {
+    margin-top: 15px;
+}
+
+.detail-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.detail-image img {
+    max-width: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.detail-info p {
+    margin: 4px 0;
+}
+
+.detail-info span {
+    font-weight: 600;
+}
+
+.edit-form .form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-form input {
+    padding: 8px;
+    border: 1px solid #444;
+    background-color: var(--card-background);
+    color: var(--text-color);
+    border-radius: 6px;
+}

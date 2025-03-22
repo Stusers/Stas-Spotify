@@ -2,16 +2,22 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import db from "./config/dbConfig.js";
+import apiRoutes from "./route/dbRoute.js";
 
 dotenv.config();
-
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(express.json());
-app.use(cors());
+// ✅ CORS setup to allow frontend access
+const allowedOrigins = [process.env.CLIENT_URL || "http://localhost:5173"];
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 
-// Test Database Connection
+app.use(express.json());
+
+// ✅ Mount routes
+app.use("/api", apiRoutes);
+
+// ✅ Test DB Connection
 const testDBConnection = async () => {
     try {
         const [result] = await db.query("SELECT 1 + 1 AS solution");
@@ -23,14 +29,14 @@ const testDBConnection = async () => {
 };
 testDBConnection();
 
-// ⬇️ Function to Reset and Populate Database ⬇️
+// ✅ Optional DB Reset and Populate
 const resetDatabase = async () => {
     try {
         console.log("🔄 Dropping all tables...");
         await db.query("SET FOREIGN_KEY_CHECKS = 0");
         await db.query("DROP TABLE IF EXISTS songs, albums, artists");
         await db.query("SET FOREIGN_KEY_CHECKS = 1");
-        console.log("✅ Tables dropped successfully.");
+        console.log("✅ Tables dropped.");
 
         await db.query(`
             CREATE TABLE artists (
@@ -38,7 +44,7 @@ const resetDatabase = async () => {
                 name VARCHAR(255) NOT NULL,
                 monthly_listeners INT NOT NULL DEFAULT 0,
                 genre VARCHAR(100) NOT NULL,
-                image_link VARCHAR(500) NULL
+                image_link VARCHAR(500)
             )
         `);
         console.log("✅ Artists table created.");
@@ -50,7 +56,7 @@ const resetDatabase = async () => {
                 artist_id INT NOT NULL,
                 release_year INT NOT NULL,
                 number_of_listens INT NOT NULL DEFAULT 0,
-                image_link VARCHAR(500) NULL,
+                image_link VARCHAR(500),
                 FOREIGN KEY (artist_id) REFERENCES artists(id) ON DELETE CASCADE
             )
         `);
@@ -63,14 +69,12 @@ const resetDatabase = async () => {
                 release_year INT NOT NULL,
                 album_id INT NOT NULL,
                 artist_id INT NOT NULL,
-                image_link VARCHAR(500) NULL,
+                image_link VARCHAR(500),
                 FOREIGN KEY (album_id) REFERENCES albums(id) ON DELETE CASCADE,
                 FOREIGN KEY (artist_id) REFERENCES artists(id) ON DELETE CASCADE
             )
         `);
         console.log("✅ Songs table created.");
-
-        console.log("🎵 Database reset successfully!");
     } catch (error) {
         console.error("❌ Error resetting database:", error);
     }
@@ -78,7 +82,7 @@ const resetDatabase = async () => {
 
 const populateDatabase = async () => {
     try {
-        console.log("🌟 Populating the database with artists, albums, and songs...");
+        console.log("🌟 Populating the database...");
 
         const artistData = [
             ["The Beatles", 25000000, "Rock", "https://upload.wikimedia.org/wikipedia/en/6/6d/The_Beatles_-_Abbey_Road.jpg"],
@@ -89,7 +93,7 @@ const populateDatabase = async () => {
             ["Drake", 25000000, "Hip-Hop", "https://upload.wikimedia.org/wikipedia/en/a/af/Drake_-_Scorpion.png"]
         ];
         await db.query("INSERT INTO artists (name, monthly_listeners, genre, image_link) VALUES ?", [artistData]);
-        console.log("✅ Artists inserted successfully.");
+        console.log("✅ Artists inserted.");
 
         const albumData = [
             ["Abbey Road", 1, 1969, 50000000, "https://upload.wikimedia.org/wikipedia/en/6/6d/The_Beatles_-_Abbey_Road.jpg"],
@@ -100,7 +104,7 @@ const populateDatabase = async () => {
             ["Scorpion", 6, 2018, 20000000, "https://upload.wikimedia.org/wikipedia/en/a/af/Drake_-_Scorpion.png"]
         ];
         await db.query("INSERT INTO albums (name, artist_id, release_year, number_of_listens, image_link) VALUES ?", [albumData]);
-        console.log("✅ Albums inserted successfully.");
+        console.log("✅ Albums inserted.");
 
         const songData = [
             ["Come Together", 1969, 1, 1, "https://upload.wikimedia.org/wikipedia/en/6/6d/The_Beatles_-_Abbey_Road.jpg"],
@@ -111,15 +115,14 @@ const populateDatabase = async () => {
             ["God's Plan", 2018, 6, 6, "https://upload.wikimedia.org/wikipedia/en/a/af/Drake_-_Scorpion.png"]
         ];
         await db.query("INSERT INTO songs (name, release_year, album_id, artist_id, image_link) VALUES ?", [songData]);
-        console.log("✅ Songs inserted successfully.");
+        console.log("✅ Songs inserted.");
 
-        console.log("🎵 Database populated successfully!");
     } catch (error) {
         console.error("❌ Error populating database:", error);
     }
-};
+}
 
-// ⬇️ Uncomment these functions if you want to reset & populate the database on startup ⬇️
+// 👇 Uncomment to reset + populate database on server start
 await resetDatabase();
 await populateDatabase();
 
