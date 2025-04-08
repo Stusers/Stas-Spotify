@@ -1,177 +1,231 @@
 import db from "../config/dbConfig.js";
 
 
-export const getArtists = async (req, res) => {
+export const getTherapists = async (req, res) => {
     try {
-        const [rows] = await db.query("SELECT * FROM artists");
+        const [rows] = await db.query("SELECT * FROM therapists");
         res.json(rows);
     } catch (error) {
-        console.error("Error fetching artists:", error);
-        res.status(500).json({ message: "Error fetching artists" });
+        console.error("Error fetching therapists:", error);
+        res.status(500).json({ message: "Error fetching therapists" });
     }
 };
 
 
-export const getArtistById = async (req, res) => {
+export const getTherapistById = async (req, res) => {
     try {
-        const [rows] = await db.query("SELECT * FROM artists WHERE id = ?", [req.params.id]);
-        if (rows.length === 0) return res.status(404).json({ message: "Artist not found" });
+        const [rows] = await db.query("SELECT * FROM therapists WHERE id = ?", [req.params.id]);
+        if (rows.length === 0) return res.status(404).json({ message: "Therapist not found" });
         res.json(rows[0]);
     } catch (error) {
-        console.error("Error fetching artist:", error);
-        res.status(500).json({ message: "Error fetching artist" });
+        console.error("Error fetching therapist:", error);
+        res.status(500).json({ message: "Error fetching therapist" });
     }
 };
 
 
-export const createArtist = async (req, res) => {
+export const createTherapist = async (req, res) => {
     try {
-        const { name, monthly_listeners, genre, image_link } = req.body;
-        await db.query("INSERT INTO artists (name, monthly_listeners, genre, image_link) VALUES (?, ?, ?, ?)",
-            [name, monthly_listeners, genre, image_link]
+        const { title, name, email, location, years_of_practice, availability, image_link } = req.body;
+        await db.query("INSERT INTO therapists (title, name, email, location, years_of_practice, availability, image_link) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            [title, name, email, location, years_of_practice, availability, image_link]
         );
-        res.status(201).json({ message: "Artist created successfully" });
+        res.status(201).json({ message: "Therapist created successfully" });
     } catch (error) {
-        console.error("Error creating artist:", error);
-        res.status(500).json({ message: "Error creating artist" });
+        console.error("Error creating therapist:", error);
+        res.status(500).json({ message: "Error creating therapist" });
     }
 };
 
 
-export const updateArtist = async (req, res) => {
+export const updateTherapist = async (req, res) => {
     try {
-        const { name, monthly_listeners, genre, image_link } = req.body;
-        await db.query("UPDATE artists SET name=?, monthly_listeners=?, genre=?, image_link=? WHERE id=?",
-            [name, monthly_listeners, genre, image_link, req.params.id]
+        const { title, name, email, location, years_of_practice, availability, image_link } = req.body;
+        await db.query("UPDATE therapists SET title=?, name=?, email=?, location=?, years_of_practice=?, availability=?, image_link=? WHERE id=?",
+            [title, name, email, location, years_of_practice, availability, image_link, req.params.id]
         );
-        res.json({ message: "Artist updated successfully" });
+        res.json({ message: "Therapist updated successfully" });
     } catch (error) {
-        console.error("Error updating artist:", error);
-        res.status(500).json({ message: "Error updating artist" });
+        console.error("Error updating therapist:", error);
+        res.status(500).json({ message: "Error updating therapist" });
     }
 };
 
 
-export const deleteArtist = async (req, res) => {
+export const deleteTherapist = async (req, res) => {
     try {
-        await db.query("DELETE FROM artists WHERE id = ?", [req.params.id]);
-        res.json({ message: "Artist deleted successfully" });
+        await db.query("DELETE FROM therapists WHERE id = ?", [req.params.id]);
+        res.json({ message: "Therapist deleted successfully" });
     } catch (error) {
-        console.error("Error deleting artist:", error);
-        res.status(500).json({ message: "Error deleting artist" });
+        console.error("Error deleting therapist:", error);
+        res.status(500).json({ message: "Error deleting therapist" });
     }
 };
 
-export const getAlbums = async (req, res) => {
+export const getClients = async (req, res) => {
     try {
-        const [rows] = await db.query("SELECT * FROM albums");
+        const [rows] = await db.query("SELECT * FROM clients");
         res.json(rows);
     } catch (error) {
-        console.error("Error fetching albums:", error);
-        res.status(500).json({ message: "Error fetching albums" });
+        console.error("Error fetching clients:", error);
+        res.status(500).json({ message: "Error fetching clients" });
     }
 };
 
-export const getAlbumById = async (req, res) => {
+export const getClientById = async (req, res) => {
     try {
-        const [rows] = await db.query("SELECT * FROM albums WHERE id = ?", [req.params.id]);
-        if (rows.length === 0) return res.status(404).json({ message: "Album not found" });
+        const [rows] = await db.query("SELECT * FROM clients WHERE id = ?", [req.params.id]);
+        if (rows.length === 0) return res.status(404).json({ message: "Client not found" });
         res.json(rows[0]);
     } catch (error) {
-        console.error("Error fetching album:", error);
-        res.status(500).json({ message: "Error fetching album" });
+        console.error("Error fetching client:", error);
+        res.status(500).json({ message: "Error fetching client" });
     }
 };
 
-export const createAlbum = async (req, res) => {
+export const createClient = async (req, res) => {
     try {
-        const { name, artist_id, release_year, number_of_listens, image_link } = req.body;
-        await db.query("INSERT INTO albums (name, artist_id, release_year, number_of_listens, image_link) VALUES (?, ?, ?, ?, ?)",
-            [name, artist_id, release_year, number_of_listens, image_link]
+        const { name, email, phone, regularity, image_link } = req.body;
+        await db.query("INSERT INTO clients (name, email, phone, regularity, image_link) VALUES (?, ?, ?, ?, ?)",
+            [name, email, phone, regularity, image_link]
         );
-        res.status(201).json({ message: "Album created successfully" });
+        res.status(201).json({ message: "Client created successfully" });
     } catch (error) {
-        console.error("Error creating album:", error);
-        res.status(500).json({ message: "Error creating album" });
+        console.error("Error creating client:", error);
+        res.status(500).json({ message: "Error creating client" });
     }
 };
 
-export const updateAlbum = async (req, res) => {
+export const updateClient = async (req, res) => {
     try {
-        const { name, artist_id, release_year, number_of_listens, image_link } = req.body;
-        await db.query("UPDATE albums SET name=?, artist_id=?, release_year=?, number_of_listens=?, image_link=? WHERE id=?",
-            [name, artist_id, release_year, number_of_listens, image_link, req.params.id]
+        const { name, email, phone, regularity, image_link } = req.body;
+        await db.query("UPDATE clients SET name=?, email=?, phone=?, regularity=?, image_link=? WHERE id=?",
+            [name, email, phone, regularity, image_link, req.params.id]
         );
-        res.json({ message: "Album updated successfully" });
+        res.json({ message: "Client updated successfully" });
     } catch (error) {
-        console.error("Error updating album:", error);
-        res.status(500).json({ message: "Error updating album" });
+        console.error("Error updating client:", error);
+        res.status(500).json({ message: "Error updating client" });
     }
 };
 
-export const deleteAlbum = async (req, res) => {
+export const deleteClient = async (req, res) => {
     try {
-        await db.query("DELETE FROM albums WHERE id = ?", [req.params.id]);
-        res.json({ message: "Album deleted successfully" });
+        await db.query("DELETE FROM clients WHERE id = ?", [req.params.id]);
+        res.json({ message: "Client deleted successfully" });
     } catch (error) {
-        console.error("Error deleting album:", error);
-        res.status(500).json({ message: "Error deleting album" });
+        console.error("Error deleting client:", error);
+        res.status(500).json({ message: "Error deleting client" });
     }
 };
 
-export const getSongs = async (req, res) => {
+export const getSessions = async (req, res) => {
     try {
-        const [rows] = await db.query("SELECT * FROM songs");
+        const [rows] = await db.query("SELECT * FROM sessions");
         res.json(rows);
     } catch (error) {
-        console.error("Error fetching songs:", error);
-        res.status(500).json({ message: "Error fetching songs" });
+        console.error("Error fetching sessions:", error);
+        res.status(500).json({ message: "Error fetching sessions" });
     }
 };
 
-export const getSongById = async (req, res) => {
+export const getSessionById = async (req, res) => {
     try {
-        const [rows] = await db.query("SELECT * FROM songs WHERE id = ?", [req.params.id]);
-        if (rows.length === 0) return res.status(404).json({ message: "Song not found" });
+        const [rows] = await db.query("SELECT * FROM sessions WHERE id = ?", [req.params.id]);
+        if (rows.length === 0) return res.status(404).json({ message: "Session not found" });
         res.json(rows[0]);
     } catch (error) {
-        console.error("Error fetching song:", error);
-        res.status(500).json({ message: "Error fetching song" });
+        console.error("Error fetching session:", error);
+        res.status(500).json({ message: "Error fetching session" });
     }
 };
 
-export const createSong = async (req, res) => {
+export const createSession = async (req, res) => {
     try {
-        const { name, release_year, album_id, artist_id, image_link } = req.body;
-        await db.query("INSERT INTO songs (name, release_year, album_id, artist_id, image_link) VALUES (?, ?, ?, ?, ?)",
-            [name, release_year, album_id, artist_id, image_link]
+        const { therapist_id, client_id, notes, date, length_minutes, status, payment_status, image_link } = req.body;
+        
+        // Validate date format
+        let formattedDate;
+        
+        try {
+            // Check if the input date is in DD/MM/YYYY format
+            if (date && typeof date === 'string' && date.includes('/')) {
+                // Convert from DD/MM/YYYY to YYYY-MM-DD format
+                const [day, month, year] = date.split('/');
+                if (day && month && year) {
+                    formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+                    if (date.includes(' ')) {
+                        // Add time if provided
+                        formattedDate += ' ' + date.split(' ')[1];
+                    } else {
+                        // Add default time if not provided
+                        formattedDate += ' 00:00:00';
+                    }
+                } else {
+                    throw new Error("Invalid date format");
+                }
+            } else {
+                // Assume it's already in correct format or handle ISO format
+                formattedDate = date;
+            }
+            
+            // Validate session status
+            const validStatus = ['SCHEDULED', 'COMPLETED', 'CANCELLED'];
+            const sessionStatus = validStatus.includes(status) ? status : 'SCHEDULED';
+            
+            // Validate payment status
+            const validPaymentStatus = ['PAID', 'PENDING', 'WAIVED'];
+            const paymentStatus = validPaymentStatus.includes(payment_status) ? payment_status : 'PENDING';
+            
+            await db.query("INSERT INTO sessions (therapist_id, client_id, notes, date, length_minutes, status, payment_status, image_link) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                [therapist_id, client_id, notes, formattedDate, length_minutes, sessionStatus, paymentStatus, image_link]
+            );
+            
+            res.status(201).json({ message: "Session created successfully" });
+        } catch (dateError) {
+            // Send a helpful error message specifically for date issues
+            return res.status(400).json({ 
+                message: "Invalid date format. Please use YYYY-MM-DD HH:MM:SS format.",
+                details: "Example: 2025-04-08 14:30:00"
+            });
+        }
+    } catch (error) {
+        console.error("Error creating session:", error);
+        
+        // Provide more specific error messages based on error type
+        if (error.code === 'ER_TRUNCATED_WRONG_VALUE') {
+            return res.status(400).json({ 
+                message: "Invalid date format. MySQL requires format: YYYY-MM-DD HH:MM:SS",
+                details: error.sqlMessage
+            });
+        }
+        
+        res.status(500).json({ 
+            message: "Error creating session", 
+            details: error.sqlMessage || error.message
+        });
+    }
+};
+
+export const updateSession = async (req, res) => {
+    try {
+        const { therapist_id, client_id, notes, date, length_minutes, status, payment_status, image_link } = req.body;
+        await db.query("UPDATE sessions SET therapist_id=?, client_id=?, notes=?, date=?, length_minutes=?, status=?, payment_status=?, image_link=? WHERE id=?",
+            [therapist_id, client_id, notes, date, length_minutes, status, payment_status, image_link, req.params.id]
         );
-        res.status(201).json({ message: "Song created successfully" });
+        res.json({ message: "Session updated successfully" });
     } catch (error) {
-        console.error("Error creating song:", error);
-        res.status(500).json({ message: "Error creating song" });
+        console.error("Error updating session:", error);
+        res.status(500).json({ message: "Error updating session" });
     }
 };
 
-export const updateSong = async (req, res) => {
+export const deleteSession = async (req, res) => {
     try {
-        const { name, release_year, album_id, artist_id, image_link } = req.body;
-        await db.query("UPDATE songs SET name=?, release_year=?, album_id=?, artist_id=?, image_link=? WHERE id=?",
-            [name, release_year, album_id, artist_id, image_link, req.params.id]
-        );
-        res.json({ message: "Song updated successfully" });
+        await db.query("DELETE FROM sessions WHERE id = ?", [req.params.id]);
+        res.json({ message: "Session deleted successfully" });
     } catch (error) {
-        console.error("Error updating song:", error);
-        res.status(500).json({ message: "Error updating song" });
-    }
-};
-
-export const deleteSong = async (req, res) => {
-    try {
-        await db.query("DELETE FROM songs WHERE id = ?", [req.params.id]);
-        res.json({ message: "Song deleted successfully" });
-    } catch (error) {
-        console.error("Error deleting song:", error);
-        res.status(500).json({ message: "Error deleting song" });
+        console.error("Error deleting session:", error);
+        res.status(500).json({ message: "Error deleting session" });
     }
 };

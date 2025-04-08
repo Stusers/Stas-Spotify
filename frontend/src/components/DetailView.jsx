@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './DetailView.css';
 
 function DetailView({ type, data, onDelete, onUpdate }) {
@@ -9,14 +10,34 @@ function DetailView({ type, data, onDelete, onUpdate }) {
     const [item, setItem] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({});
-
-    useEffect(() => {
+    const [therapists, setTherapists] = useState([]);
+    const [clients, setClients] = useState([]);    useEffect(() => {
         const foundItem = data.find(item => item.id === parseInt(id));
         if (foundItem) {
             setItem(foundItem);
             setFormData(foundItem);
         }
     }, [id, data]);
+    
+    // Fetch therapists and clients when editing a session
+    useEffect(() => {
+        if (isEditing && type === 'sessions') {
+            const fetchRelatedData = async () => {
+                try {
+                    const [therapistsRes, clientsRes] = await Promise.all([
+                        axios.get('/api/therapists'),
+                        axios.get('/api/clients')
+                    ]);
+                    setTherapists(therapistsRes.data);
+                    setClients(clientsRes.data);
+                } catch (error) {
+                    console.error('Error fetching related data:', error);
+                }
+            };
+            
+            fetchRelatedData();
+        }
+    }, [isEditing, type]);
 
     const goBack = () => {
         navigate('/');
@@ -85,94 +106,189 @@ function DetailView({ type, data, onDelete, onUpdate }) {
                                 onChange={handleChange}
                                 required
                             />
-                        </div>
-
-                        {type === 'artists' && (
+                        </div>                        {type === 'therapists' && (
                             <>
                                 <div className="form-group">
-                                    <label>Monthly Listeners</label>
+                                    <label>Title</label>
                                     <input
                                         type="text"
-                                        name="monthly_listeners"
-                                        value={formData.monthly_listeners || ''}
+                                        name="title"
+                                        value={formData.title || ''}
                                         onChange={handleChange}
+                                        required
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Genre</label>
+                                    <label>Email</label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={formData.email || ''}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Location</label>
                                     <input
                                         type="text"
-                                        name="genre"
-                                        value={formData.genre || ''}
+                                        name="location"
+                                        value={formData.location || ''}
                                         onChange={handleChange}
+                                        required
                                     />
+                                </div>
+                                <div className="form-group">
+                                    <label>Years of Practice</label>
+                                    <input
+                                        type="number"
+                                        name="years_of_practice"
+                                        value={formData.years_of_practice || ''}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Availability</label>
+                                    <select
+                                        name="availability"
+                                        value={formData.availability || ''}
+                                        onChange={handleChange}
+                                        required
+                                    >
+                                        <option value="">Select availability</option>
+                                        <option value="TAKING CLIENTS">TAKING CLIENTS</option>
+                                        <option value="NOT TAKING CLIENTS">NOT TAKING CLIENTS</option>
+                                    </select>
                                 </div>
                             </>
                         )}
 
-                        {type === 'albums' && (
+                        {type === 'clients' && (
                             <>
                                 <div className="form-group">
-                                    <label>Artist ID</label>
+                                    <label>Email</label>
                                     <input
-                                        type="number"
-                                        name="artist_id"
-                                        value={formData.artist_id || ''}
+                                        type="email"
+                                        name="email"
+                                        value={formData.email || ''}
                                         onChange={handleChange}
                                         required
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Release Year</label>
+                                    <label>Phone</label>
                                     <input
-                                        type="number"
-                                        name="release_year"
-                                        value={formData.release_year || ''}
+                                        type="text"
+                                        name="phone"
+                                        value={formData.phone || ''}
                                         onChange={handleChange}
+                                        required
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Number of Listens</label>
-                                    <input
-                                        type="text"
-                                        name="number_of_listens"
-                                        value={formData.number_of_listens || ''}
+                                    <label>Appointment Regularity</label>
+                                    <select
+                                        name="regularity"
+                                        value={formData.regularity || ''}
                                         onChange={handleChange}
-                                    />
+                                        required
+                                    >
+                                        <option value="">Select regularity</option>
+                                        <option value="WEEKLY">WEEKLY</option>
+                                        <option value="MONTHLY">MONTHLY</option>
+                                    </select>
                                 </div>
                             </>
                         )}
 
-                        {type === 'songs' && (
-                            <>
-                                <div className="form-group">
-                                    <label>Release Year</label>
-                                    <input
-                                        type="number"
-                                        name="release_year"
-                                        value={formData.release_year || ''}
+                        {type === 'sessions' && (
+                            <>                                <div className="form-group">
+                                    <label>Therapist</label>
+                                    <select
+                                        name="therapist_id"
+                                        value={formData.therapist_id || ''}
                                         onChange={handleChange}
-                                    />
+                                        required
+                                    >
+                                        <option value="">Select Therapist</option>
+                                        {therapists.map(therapist => (
+                                            <option key={therapist.id} value={therapist.id}>
+                                                {therapist.title} {therapist.name} ({therapist.availability})
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div className="form-group">
-                                    <label>Album ID</label>
+                                    <label>Client</label>
+                                    <select
+                                        name="client_id"
+                                        value={formData.client_id || ''}
+                                        onChange={handleChange}
+                                        required
+                                    >
+                                        <option value="">Select Client</option>
+                                        {clients.map(client => (
+                                            <option key={client.id} value={client.id}>
+                                                {client.name} ({client.regularity})
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label>Notes</label>
+                                    <textarea
+                                        name="notes"
+                                        value={formData.notes || ''}
+                                        onChange={handleChange}
+                                        rows="4"
+                                    ></textarea>
+                                </div>
+                                <div className="form-group">
+                                    <label>Date & Time</label>
                                     <input
-                                        type="number"
-                                        name="album_id"
-                                        value={formData.album_id || ''}
+                                        type="datetime-local"
+                                        name="date"
+                                        value={formData.date ? formData.date.replace(' ', 'T') : ''}
                                         onChange={handleChange}
                                         required
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Artist ID</label>
+                                    <label>Length (minutes)</label>
                                     <input
                                         type="number"
-                                        name="artist_id"
-                                        value={formData.artist_id || ''}
+                                        name="length_minutes"
+                                        value={formData.length_minutes || ''}
                                         onChange={handleChange}
                                         required
                                     />
+                                </div>
+                                <div className="form-group">
+                                    <label>Status</label>
+                                    <select
+                                        name="status"
+                                        value={formData.status || 'SCHEDULED'}
+                                        onChange={handleChange}
+                                        required
+                                    >
+                                        <option value="SCHEDULED">SCHEDULED</option>
+                                        <option value="COMPLETED">COMPLETED</option>
+                                        <option value="CANCELLED">CANCELLED</option>
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label>Payment Status</label>
+                                    <select
+                                        name="payment_status"
+                                        value={formData.payment_status || 'PENDING'}
+                                        onChange={handleChange}
+                                        required
+                                    >
+                                        <option value="PAID">PAID</option>
+                                        <option value="PENDING">PENDING</option>
+                                        <option value="WAIVED">WAIVED</option>
+                                    </select>
                                 </div>
                             </>
                         )}
@@ -189,30 +305,36 @@ function DetailView({ type, data, onDelete, onUpdate }) {
 
                         <button type="submit" className="save-button">Save Changes</button>
                     </form>
-                ) : (
-                    <div className="detail-info">
-                        <h1>{item.name}</h1>
+                ) : (                    <div className="detail-info">
+                        <h1>{item.name || (type === 'sessions' ? `Session on ${new Date(item.date).toLocaleDateString()}` : '')}</h1>
 
-                        {type === 'artists' && (
+                        {type === 'therapists' && (
                             <>
-                                <p><span>Monthly Listeners:</span> {item.monthly_listeners}</p>
-                                <p><span>Genre:</span> {item.genre}</p>
+                                <p><span>Title:</span> {item.title}</p>
+                                <p><span>Email:</span> {item.email}</p>
+                                <p><span>Location:</span> {item.location}</p>
+                                <p><span>Years of Practice:</span> {item.years_of_practice}</p>
+                                <p><span>Availability:</span> {item.availability}</p>
                             </>
                         )}
 
-                        {type === 'albums' && (
+                        {type === 'clients' && (
                             <>
-                                <p><span>Artist ID:</span> {item.artist_id}</p>
-                                <p><span>Release Year:</span> {item.release_year}</p>
-                                <p><span>Listens:</span> {item.number_of_listens}</p>
+                                <p><span>Email:</span> {item.email}</p>
+                                <p><span>Phone:</span> {item.phone}</p>
+                                <p><span>Appointment Regularity:</span> {item.regularity}</p>
                             </>
                         )}
 
-                        {type === 'songs' && (
+                        {type === 'sessions' && (
                             <>
-                                <p><span>Release Year:</span> {item.release_year}</p>
-                                <p><span>Album ID:</span> {item.album_id}</p>
-                                <p><span>Artist ID:</span> {item.artist_id}</p>
+                                <p><span>Therapist ID:</span> {item.therapist_id}</p>
+                                <p><span>Client ID:</span> {item.client_id}</p>
+                                <p><span>Date:</span> {new Date(item.date).toLocaleString()}</p>
+                                <p><span>Length:</span> {item.length_minutes} minutes</p>
+                                <p><span>Status:</span> {item.status || 'SCHEDULED'}</p>
+                                <p><span>Payment Status:</span> {item.payment_status || 'PENDING'}</p>
+                                <p><span>Notes:</span> {item.notes}</p>
                             </>
                         )}
                     </div>

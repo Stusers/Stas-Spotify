@@ -9,9 +9,9 @@ import AddButton from './components/AddButton';
 import { fallbackData } from './fallbackData';
 
 function App() {
-    const [artists, setArtists] = useState([]);
-    const [albums, setAlbums] = useState([]);
-    const [songs, setSongs] = useState([]);
+    const [therapists, setTherapists] = useState([]);
+    const [clients, setClients] = useState([]);
+    const [sessions, setSessions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [usingFallback, setUsingFallback] = useState(false);
 
@@ -19,20 +19,20 @@ function App() {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const [artistsRes, albumsRes, songsRes] = await Promise.all([
-                    axios.get('/api/artists'),
-                    axios.get('/api/albums'),
-                    axios.get('/api/songs')
+                const [therapistsRes, clientsRes, sessionsRes] = await Promise.all([
+                    axios.get('/api/therapists'),
+                    axios.get('/api/clients'),
+                    axios.get('/api/sessions')
                 ]);
-                setArtists(artistsRes.data);
-                setAlbums(albumsRes.data);
-                setSongs(songsRes.data);
+                setTherapists(therapistsRes.data);
+                setClients(clientsRes.data);
+                setSessions(sessionsRes.data);
                 setLoading(false);
             } catch (err) {
                 console.warn('Backend connection failed, using fallback data');
-                setArtists(fallbackData.artists);
-                setAlbums(fallbackData.albums);
-                setSongs(fallbackData.songs);
+                setTherapists(fallbackData.therapists);
+                setClients(fallbackData.clients);
+                setSessions(fallbackData.sessions);
                 setUsingFallback(true);
                 setLoading(false);
             }
@@ -44,9 +44,9 @@ function App() {
     const handleDelete = async (type, id) => {
         try {
             await axios.delete(`/api/${type}/${id}`);
-            if (type === 'artists') setArtists(prev => prev.filter(i => i.id !== id));
-            if (type === 'albums') setAlbums(prev => prev.filter(i => i.id !== id));
-            if (type === 'songs') setSongs(prev => prev.filter(i => i.id !== id));
+            if (type === 'therapists') setTherapists(prev => prev.filter(i => i.id !== id));
+            if (type === 'clients') setClients(prev => prev.filter(i => i.id !== id));
+            if (type === 'sessions') setSessions(prev => prev.filter(i => i.id !== id));
         } catch {
             alert(`Failed to delete. ${usingFallback ? 'Backend is offline.' : ''}`);
         }
@@ -56,9 +56,9 @@ function App() {
         try {
             await axios.put(`/api/${type}/${id}`, data);
             const update = item => item.id === id ? { ...item, ...data } : item;
-            if (type === 'artists') setArtists(prev => prev.map(update));
-            if (type === 'albums') setAlbums(prev => prev.map(update));
-            if (type === 'songs') setSongs(prev => prev.map(update));
+            if (type === 'therapists') setTherapists(prev => prev.map(update));
+            if (type === 'clients') setClients(prev => prev.map(update));
+            if (type === 'sessions') setSessions(prev => prev.map(update));
             return true;
         } catch {
             alert(`Failed to update. ${usingFallback ? 'Backend is offline.' : ''}`);
@@ -70,31 +70,29 @@ function App() {
         try {
             const res = await axios.post(`/api/${type}`, data);
             const newItem = res.data.id ? { ...data, id: res.data.id } : { ...data, id: Date.now() };
-            if (type === 'artists') setArtists(prev => [...prev, newItem]);
-            if (type === 'albums') setAlbums(prev => [...prev, newItem]);
-            if (type === 'songs') setSongs(prev => [...prev, newItem]);
+            if (type === 'therapists') setTherapists(prev => [...prev, newItem]);
+            if (type === 'clients') setClients(prev => [...prev, newItem]);
+            if (type === 'sessions') setSessions(prev => [...prev, newItem]);
             return true;
         } catch {
             if (usingFallback) {
                 const fallbackItem = { ...data, id: Date.now() };
-                if (type === 'artists') setArtists(prev => [...prev, fallbackItem]);
-                if (type === 'albums') setAlbums(prev => [...prev, fallbackItem]);
-                if (type === 'songs') setSongs(prev => [...prev, fallbackItem]);
+                if (type === 'therapists') setTherapists(prev => [...prev, fallbackItem]);
+                if (type === 'clients') setClients(prev => [...prev, fallbackItem]);
+                if (type === 'sessions') setSessions(prev => [...prev, fallbackItem]);
                 return true;
             }
             alert('Failed to add item.');
             return false;
         }
-    };
-
-    if (loading) return <div className="loading">Loading...</div>;
+    };    if (loading) return <div className="loading">Loading...</div>;
 
     return (
         <BrowserRouter>
             <header className="app-header">
                 <div className="logo-container">
-                    <img src="/logo.png" alt="Stas's Spotify" className="logo-image" />
-                    <h1 className="logo-text">Stas's Spotify</h1>
+                    <img src="/logo.png" alt="Therapy Management" className="logo-image" />
+                    <h1 className="logo-text">Therapy Management</h1>
                 </div>
             </header>
 
@@ -102,20 +100,20 @@ function App() {
                 <Routes>
                     <Route path="/" element={
                         <HomePage
-                            artists={artists}
-                            albums={albums}
-                            songs={songs}
+                            therapists={therapists}
+                            clients={clients}
+                            sessions={sessions}
                             handleAdd={handleAdd}
                         />
                     } />
-                    <Route path="/artists/:id" element={
-                        <DetailView type="artists" data={artists} onDelete={handleDelete} onUpdate={handleUpdate} />
+                    <Route path="/therapists/:id" element={
+                        <DetailView type="therapists" data={therapists} onDelete={handleDelete} onUpdate={handleUpdate} />
                     } />
-                    <Route path="/albums/:id" element={
-                        <DetailView type="albums" data={albums} onDelete={handleDelete} onUpdate={handleUpdate} />
+                    <Route path="/clients/:id" element={
+                        <DetailView type="clients" data={clients} onDelete={handleDelete} onUpdate={handleUpdate} />
                     } />
-                    <Route path="/songs/:id" element={
-                        <DetailView type="songs" data={songs} onDelete={handleDelete} onUpdate={handleUpdate} />
+                    <Route path="/sessions/:id" element={
+                        <DetailView type="sessions" data={sessions} onDelete={handleDelete} onUpdate={handleUpdate} />
                     } />
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
@@ -130,39 +128,34 @@ function App() {
     );
 }
 
-function HomePage({ artists, albums, songs, handleAdd }) {
+function HomePage({ therapists, clients, sessions, handleAdd }) {
     return (
         <main>
-            <EntitySection title="Songs" type="songs" items={songs} handleAdd={handleAdd} />
+            <EntitySection title="Therapists" type="therapists" items={therapists} handleAdd={handleAdd} />
 
-            <EntitySection title="Albums" type="albums" items={albums} handleAdd={handleAdd} />
+            <EntitySection title="Clients" type="clients" items={clients} handleAdd={handleAdd} />
 
-            <EntitySection title="Artists" type="artists" items={artists} handleAdd={handleAdd} />
-
+            <EntitySection title="Sessions" type="sessions" items={sessions} handleAdd={handleAdd} />
         </main>
     );
 }
 
-function EntitySection({ title, type, items, handleAdd }) {
-    const fields = {
-        artists: [
+function EntitySection({ title, type, items, handleAdd }) {    const fields = {
+        therapists: [
             { name: 'name', type: 'text', required: true },
-            { name: 'monthly_listeners', type: 'text' },
-            { name: 'genre', type: 'text' },
+            { name: 'specialization', type: 'text', required: true },
             { name: 'image_link', type: 'text' }
         ],
-        albums: [
+        clients: [
             { name: 'name', type: 'text', required: true },
-            { name: 'artist_id', type: 'number', required: true },
-            { name: 'release_year', type: 'number' },
-            { name: 'number_of_listens', type: 'text' },
+            { name: 'age', type: 'number', required: true },
             { name: 'image_link', type: 'text' }
         ],
-        songs: [
-            { name: 'name', type: 'text', required: true },
-            { name: 'release_year', type: 'number' },
-            { name: 'album_id', type: 'number', required: true },
-            { name: 'artist_id', type: 'number', required: true },
+        sessions: [
+            { name: 'topic', type: 'text', required: true },
+            { name: 'session_date', type: 'date', required: true },
+            { name: 'therapist_id', type: 'select', required: true },
+            { name: 'client_id', type: 'select', required: true },
             { name: 'image_link', type: 'text' }
         ]
     }[type];
@@ -191,14 +184,30 @@ function EntitySection({ title, type, items, handleAdd }) {
 }
 
 function getSubtitle(type, item) {
-    if (type === 'artists') return `${item.monthly_listeners} monthly listeners`;
-    if (type === 'albums') return `Released: ${item.release_year}`;
-    if (type === 'songs') return `Released: ${item.release_year}`;
+    if (type === 'therapists') return `${item.title || ''} ${item.name || ''}`;
+    if (type === 'clients') return `${item.email || ''}`;
+    if (type === 'sessions') {
+        // Format the date nicely
+        try {
+            // Try to parse the date - it could be in different formats from the server
+            const date = new Date(item.date);
+            // Check if date is valid
+            if (!isNaN(date.getTime())) {
+                return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+            }
+            // Fallback if date can't be parsed
+            return item.notes ? item.notes.substring(0, 20) + '...' : 'Session';
+        } catch (e) {
+            console.log('Error parsing date:', e, item);
+            return 'Session date';
+        }
+    }
 }
 
 function getDescription(type, item) {
-    if (type === 'artists') return item.genre;
-    if (type === 'albums') return `${item.number_of_listens} listens`;
+    if (type === 'therapists') return item.location || 'Location';
+    if (type === 'clients') return `${item.regularity || ''} sessions`;
+    if (type === 'sessions') return item.notes || 'Session';
     return '';
 }
 

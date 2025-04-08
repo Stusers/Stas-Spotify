@@ -1,31 +1,31 @@
 import express from "express";
 import {
-    getArtists, getArtistById, createArtist, updateArtist, deleteArtist,
-    getAlbums, getAlbumById, createAlbum, updateAlbum, deleteAlbum,
-    getSongs, getSongById, createSong, updateSong, deleteSong
+    getTherapists, getTherapistById, createTherapist, updateTherapist, deleteTherapist,
+    getClients, getClientById, createClient, updateClient, deleteClient,
+    getSessions, getSessionById, createSession, updateSession, deleteSession
 } from "../controller/dbController.js";
 
 const router = express.Router();
 
-// Artist Routes
-router.get("/artists", getArtists);
-router.get("/artists/:id", getArtistById);
-router.post("/artists", createArtist);
-router.put("/artists/:id", updateArtist);
-router.delete("/artists/:id", deleteArtist);
+// Therapist Routes
+router.get("/therapists", getTherapists);
+router.get("/therapists/:id", getTherapistById);
+router.post("/therapists", createTherapist);
+router.put("/therapists/:id", updateTherapist);
+router.delete("/therapists/:id", deleteTherapist);
 
-// Album Routes
-router.get("/albums", getAlbums);
-router.get("/albums/:id", getAlbumById);
-router.post("/albums", createAlbum);
-router.put("/albums/:id", updateAlbum);
-router.delete("/albums/:id", deleteAlbum);
+// Client Routes
+router.get("/clients", getClients);
+router.get("/clients/:id", getClientById);
+router.post("/clients", createClient);
+router.put("/clients/:id", updateClient);
+router.delete("/clients/:id", deleteClient);
 
-// Song Routes
-router.get("/songs", getSongs);
-router.get("/songs/:id", getSongById);
-router.post("/songs", createSong);
-router.put("/songs/:id", updateSong);
-router.delete("/songs/:id", deleteSong);
+// Session Routes
+router.get("/sessions", getSessions);
+router.get("/sessions/:id", getSessionById);
+router.post("/sessions", createSession);
+router.put("/sessions/:id", updateSession);
+router.delete("/sessions/:id", deleteSession);
 
 export default router;
