@@ -1,31 +1,37 @@
+// route/dbRoute.js
 import express from "express";
+import authenticate from "../config/auth.js";
 import {
-    getArtists, getArtistById, createArtist, updateArtist, deleteArtist,
-    getAlbums, getAlbumById, createAlbum, updateAlbum, deleteAlbum,
-    getSongs, getSongById, createSong, updateSong, deleteSong
+    GetUser,
+    CreateUser,
+    GetLogsByUserId,
+    CreateLog,
+    UpdateLog,
+    DeleteLog,
+    GetPlansByUserId,
+    CreatePlan,
+    UpdatePlan,
+    DeletePlan
 } from "../controller/dbController.js";
 
 const router = express.Router();
 
-// Artist Routes
-router.get("/artists", getArtists);
-router.get("/artists/:id", getArtistById);
-router.post("/artists", createArtist);
-router.put("/artists/:id", updateArtist);
-router.delete("/artists/:id", deleteArtist);
+// (Optional) allow public user creation
+router.post("/users", CreateUser);
 
-// Album Routes
-router.get("/albums", getAlbums);
-router.get("/albums/:id", getAlbumById);
-router.post("/albums", createAlbum);
-router.put("/albums/:id", updateAlbum);
-router.delete("/albums/:id", deleteAlbum);
+// All following routes require a valid JWT
+router.use(authenticate);
 
-// Song Routes
-router.get("/songs", getSongs);
-router.get("/songs/:id", getSongById);
-router.post("/songs", createSong);
-router.put("/songs/:id", updateSong);
-router.delete("/songs/:id", deleteSong);
+router.get("/users/:id", GetUser);
+
+router.get("/users/:userId/logs", GetLogsByUserId);
+router.post("/users/:userId/logs", CreateLog);
+router.put("/logs/:id", UpdateLog);
+router.delete("/logs/:id", DeleteLog);
+
+router.get("/users/:userId/plans", GetPlansByUserId);
+router.post("/users/:userId/plans", CreatePlan);
+router.put("/plans/:id", UpdatePlan);
+router.delete("/plans/:id", DeletePlan);
 
 export default router;

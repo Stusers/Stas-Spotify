@@ -1,177 +1,154 @@
 import db from "../config/dbConfig.js";
 
-
-export const getArtists = async (req, res) => {
+// Fetch a single user by ID
+export const GetUser = async (req, res) => {
+    const { id } = req.params;
     try {
-        const [rows] = await db.query("SELECT * FROM artists");
-        res.json(rows);
-    } catch (error) {
-        console.error("Error fetching artists:", error);
-        res.status(500).json({ message: "Error fetching artists" });
-    }
-};
-
-
-export const getArtistById = async (req, res) => {
-    try {
-        const [rows] = await db.query("SELECT * FROM artists WHERE id = ?", [req.params.id]);
-        if (rows.length === 0) return res.status(404).json({ message: "Artist not found" });
+        const [rows] = await db.query(
+            "SELECT id, name, email, image_link FROM user WHERE id = ?",
+            [id]
+        );
+        if (!rows.length) return res.status(404).json({ message: "User not found" });
         res.json(rows[0]);
     } catch (error) {
-        console.error("Error fetching artist:", error);
-        res.status(500).json({ message: "Error fetching artist" });
+        console.error("Error retrieving user:", error);
+        res.status(500).json({ message: "Error retrieving user" });
     }
 };
 
-
-export const createArtist = async (req, res) => {
+// Create a new user (open endpoint)
+export const CreateUser = async (req, res) => {
+    const { name, password, email, image_link } = req.body;
     try {
-        const { name, monthly_listeners, genre, image_link } = req.body;
-        await db.query("INSERT INTO artists (name, monthly_listeners, genre, image_link) VALUES (?, ?, ?, ?)",
-            [name, monthly_listeners, genre, image_link]
+        const [result] = await db.query(
+            "INSERT INTO user (name, password, hash_password, email, image_link) VALUES (?, ?, ?, ?, ?)",
+            [name, password, password, email, image_link]
         );
-        res.status(201).json({ message: "Artist created successfully" });
+        res.status(201).json({ id: result.insertId, name, email, image_link });
     } catch (error) {
-        console.error("Error creating artist:", error);
-        res.status(500).json({ message: "Error creating artist" });
+        console.error("Error creating user:", error);
+        res.status(500).json({ message: "Error creating user" });
     }
 };
 
-
-export const updateArtist = async (req, res) => {
+// Fetch logs for authenticated user
+export const GetLogsByUserId = async (req, res) => {
+    const userId = req.user.id;
     try {
-        const { name, monthly_listeners, genre, image_link } = req.body;
-        await db.query("UPDATE artists SET name=?, monthly_listeners=?, genre=?, image_link=? WHERE id=?",
-            [name, monthly_listeners, genre, image_link, req.params.id]
+        const [rows] = await db.query(
+            "SELECT id, name, `desc` AS logdesc, start_date, end_date, post_date, image_link FROM logs WHERE user_id = ? ORDER BY post_date DESC",
+            [userId]
         );
-        res.json({ message: "Artist updated successfully" });
-    } catch (error) {
-        console.error("Error updating artist:", error);
-        res.status(500).json({ message: "Error updating artist" });
-    }
-};
-
-
-export const deleteArtist = async (req, res) => {
-    try {
-        await db.query("DELETE FROM artists WHERE id = ?", [req.params.id]);
-        res.json({ message: "Artist deleted successfully" });
-    } catch (error) {
-        console.error("Error deleting artist:", error);
-        res.status(500).json({ message: "Error deleting artist" });
-    }
-};
-
-export const getAlbums = async (req, res) => {
-    try {
-        const [rows] = await db.query("SELECT * FROM albums");
         res.json(rows);
     } catch (error) {
-        console.error("Error fetching albums:", error);
-        res.status(500).json({ message: "Error fetching albums" });
+        console.error("Error retrieving logs:", error);
+        res.status(500).json({ message: "Error retrieving logs" });
     }
 };
 
-export const getAlbumById = async (req, res) => {
+// Create a log for authenticated user
+export const CreateLog = async (req, res) => {
+    const userId = req.user.id;
+    const { name, logdesc, start_date, end_date, post_date, image_link } = req.body;
     try {
-        const [rows] = await db.query("SELECT * FROM albums WHERE id = ?", [req.params.id]);
-        if (rows.length === 0) return res.status(404).json({ message: "Album not found" });
-        res.json(rows[0]);
-    } catch (error) {
-        console.error("Error fetching album:", error);
-        res.status(500).json({ message: "Error fetching album" });
-    }
-};
-
-export const createAlbum = async (req, res) => {
-    try {
-        const { name, artist_id, release_year, number_of_listens, image_link } = req.body;
-        await db.query("INSERT INTO albums (name, artist_id, release_year, number_of_listens, image_link) VALUES (?, ?, ?, ?, ?)",
-            [name, artist_id, release_year, number_of_listens, image_link]
+        const [result] = await db.query(
+            "INSERT INTO logs (name, `desc`, user_id, start_date, end_date, post_date, image_link) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            [name, logdesc, userId, start_date, end_date, post_date, image_link]
         );
-        res.status(201).json({ message: "Album created successfully" });
+        res.status(201).json({ id: result.insertId, name, logdesc, start_date, end_date, post_date, image_link });
     } catch (error) {
-        console.error("Error creating album:", error);
-        res.status(500).json({ message: "Error creating album" });
+        console.error("Error creating log:", error);
+        res.status(500).json({ message: "Error creating log" });
     }
 };
 
-export const updateAlbum = async (req, res) => {
+// Update a log by ID
+export const UpdateLog = async (req, res) => {
+    const { id } = req.params;
+    const { name, logdesc, start_date, end_date, post_date, image_link } = req.body;
     try {
-        const { name, artist_id, release_year, number_of_listens, image_link } = req.body;
-        await db.query("UPDATE albums SET name=?, artist_id=?, release_year=?, number_of_listens=?, image_link=? WHERE id=?",
-            [name, artist_id, release_year, number_of_listens, image_link, req.params.id]
+        const [result] = await db.query(
+            "UPDATE logs SET name = ?, `desc` = ?, start_date = ?, end_date = ?, post_date = ?, image_link = ? WHERE id = ?",
+            [name, logdesc, start_date, end_date, post_date, image_link, id]
         );
-        res.json({ message: "Album updated successfully" });
+        if (result.affectedRows === 0) return res.status(404).json({ message: "Log not found" });
+        res.json({ id: Number(id), name, logdesc, start_date, end_date, post_date, image_link });
     } catch (error) {
-        console.error("Error updating album:", error);
-        res.status(500).json({ message: "Error updating album" });
+        console.error("Error updating log:", error);
+        res.status(500).json({ message: "Error updating log" });
     }
 };
 
-export const deleteAlbum = async (req, res) => {
+// Delete a log by ID
+export const DeleteLog = async (req, res) => {
+    const { id } = req.params;
     try {
-        await db.query("DELETE FROM albums WHERE id = ?", [req.params.id]);
-        res.json({ message: "Album deleted successfully" });
+        const [result] = await db.query("DELETE FROM logs WHERE id = ?", [id]);
+        if (result.affectedRows === 0) return res.status(404).json({ message: "Log not found" });
+        res.sendStatus(204);
     } catch (error) {
-        console.error("Error deleting album:", error);
-        res.status(500).json({ message: "Error deleting album" });
+        console.error("Error deleting log:", error);
+        res.status(500).json({ message: "Error deleting log" });
     }
 };
 
-export const getSongs = async (req, res) => {
+// Fetch plans for authenticated user
+export const GetPlansByUserId = async (req, res) => {
+    const userId = req.user.id;
     try {
-        const [rows] = await db.query("SELECT * FROM songs");
+        const [rows] = await db.query(
+            "SELECT id, name, `desc` AS planDesc, end_date, location, image_link FROM plans WHERE user_id = ? ORDER BY end_date",
+            [userId]
+        );
         res.json(rows);
     } catch (error) {
-        console.error("Error fetching songs:", error);
-        res.status(500).json({ message: "Error fetching songs" });
+        console.error("Error retrieving plans:", error);
+        res.status(500).json({ message: "Error retrieving plans" });
     }
 };
 
-export const getSongById = async (req, res) => {
+// Create a plan for authenticated user
+export const CreatePlan = async (req, res) => {
+    const userId = req.user.id;
+    const { name, desc, end_date, location, image_link } = req.body;
     try {
-        const [rows] = await db.query("SELECT * FROM songs WHERE id = ?", [req.params.id]);
-        if (rows.length === 0) return res.status(404).json({ message: "Song not found" });
-        res.json(rows[0]);
-    } catch (error) {
-        console.error("Error fetching song:", error);
-        res.status(500).json({ message: "Error fetching song" });
-    }
-};
-
-export const createSong = async (req, res) => {
-    try {
-        const { name, release_year, album_id, artist_id, image_link } = req.body;
-        await db.query("INSERT INTO songs (name, release_year, album_id, artist_id, image_link) VALUES (?, ?, ?, ?, ?)",
-            [name, release_year, album_id, artist_id, image_link]
+        const [result] = await db.query(
+            "INSERT INTO plans (name, `desc`, user_id, end_date, location, image_link) VALUES (?, ?, ?, ?, ?, ?)",
+            [name, desc, userId, end_date, location, image_link]
         );
-        res.status(201).json({ message: "Song created successfully" });
+        res.status(201).json({ id: result.insertId, name, desc, end_date, location, image_link });
     } catch (error) {
-        console.error("Error creating song:", error);
-        res.status(500).json({ message: "Error creating song" });
+        console.error("Error creating plan:", error);
+        res.status(500).json({ message: "Error creating plan" });
     }
 };
 
-export const updateSong = async (req, res) => {
+// Update a plan by ID
+export const UpdatePlan = async (req, res) => {
+    const { id } = req.params;
+    const { name, desc, end_date, location, image_link } = req.body;
     try {
-        const { name, release_year, album_id, artist_id, image_link } = req.body;
-        await db.query("UPDATE songs SET name=?, release_year=?, album_id=?, artist_id=?, image_link=? WHERE id=?",
-            [name, release_year, album_id, artist_id, image_link, req.params.id]
+        const [result] = await db.query(
+            "UPDATE plans SET name = ?, `desc` = ?, end_date = ?, location = ?, image_link = ? WHERE id = ?",
+            [name, desc, end_date, location, image_link, id]
         );
-        res.json({ message: "Song updated successfully" });
+        if (result.affectedRows === 0) return res.status(404).json({ message: "Plan not found" });
+        res.json({ id: Number(id), name, desc, end_date, location, image_link });
     } catch (error) {
-        console.error("Error updating song:", error);
-        res.status(500).json({ message: "Error updating song" });
+        console.error("Error updating plan:", error);
+        res.status(500).json({ message: "Error updating plan" });
     }
 };
 
-export const deleteSong = async (req, res) => {
+// Delete a plan by ID
+export const DeletePlan = async (req, res) => {
+    const { id } = req.params;
     try {
-        await db.query("DELETE FROM songs WHERE id = ?", [req.params.id]);
-        res.json({ message: "Song deleted successfully" });
+        const [result] = await db.query("DELETE FROM plans WHERE id = ?", [id]);
+        if (result.affectedRows === 0) return res.status(404).json({ message: "Plan not found" });
+        res.sendStatus(204);
     } catch (error) {
-        console.error("Error deleting song:", error);
-        res.status(500).json({ message: "Error deleting song" });
+        console.error("Error deleting plan:", error);
+        res.status(500).json({ message: "Error deleting plan" });
     }
 };

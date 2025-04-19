@@ -1,139 +1,64 @@
 // fallbackData.js
 export const fallbackData = {
-    artists: [
+    logs: [
         {
             id: 1,
-            name: "Taylor Swift",
-            monthly_listeners: "85.4M",
-            genre: "Pop",
-            image_link: "https://via.placeholder.com/200?text=Taylor+Swift"
+            name: "Morning Run",
+            logdesc: "5km run in the park",
+            user_id: 1,
+            start_date: "2025-04-01",
+            end_date: "2025-04-01",
+            post_date: "2025-04-01T07:30",
+            image_link: "https://via.placeholder.com/200?text=Morning+Run"
         },
         {
             id: 2,
-            name: "The Weeknd",
-            monthly_listeners: "75.8M",
-            genre: "R&B",
-            image_link: "https://via.placeholder.com/200?text=The+Weeknd"
+            name: "Project Kickoff",
+            logdesc: "Initial meeting for project X",
+            user_id: 2,
+            start_date: "2025-03-15",
+            end_date: "2025-03-15",
+            post_date: "2025-03-15T09:00",
+            image_link: "https://via.placeholder.com/200?text=Project+Kickoff"
         },
         {
             id: 3,
-            name: "Drake",
-            monthly_listeners: "70.2M",
-            genre: "Hip-Hop",
-            image_link: "https://via.placeholder.com/200?text=Drake"
-        },
-        {
-            id: 4,
-            name: "Billie Eilish",
-            monthly_listeners: "65.7M",
-            genre: "Alternative",
-            image_link: "https://via.placeholder.com/200?text=Billie+Eilish"
-        },
-        {
-            id: 5,
-            name: "Ed Sheeran",
-            monthly_listeners: "80.1M",
-            genre: "Pop",
-            image_link: "https://via.placeholder.com/200?text=Ed+Sheeran"
-        },
-        {
-            id: 6,
-            name: "Dua Lipa",
-            monthly_listeners: "60.3M",
-            genre: "Pop",
-            image_link: "https://via.placeholder.com/200?text=Dua+Lipa"
+            name: "Yoga Session",
+            logdesc: "Evening yoga and meditation",
+            user_id: 3,
+            start_date: "2025-04-10",
+            end_date: "2025-04-10",
+            post_date: "2025-04-10T18:00",
+            image_link: "https://via.placeholder.com/200?text=Yoga+Session"
         }
     ],
-    albums: [
+    plans: [
         {
             id: 1,
-            name: "Midnights",
-            artist_id: 1,
-            release_year: 2022,
-            number_of_listens: "2.8B",
-            image_link: "https://via.placeholder.com/200?text=Midnights"
+            name: "Vacation in Paris",
+            desc: "Trip to see the Eiffel Tower",
+            user_id: 1,
+            end_date: "2025-06-01",
+            location: "Paris, France",
+            image_link: "https://via.placeholder.com/200?text=Vacation+in+Paris"
         },
         {
             id: 2,
-            name: "After Hours",
-            artist_id: 2,
-            release_year: 2020,
-            number_of_listens: "3.5B",
-            image_link: "https://via.placeholder.com/200?text=After+Hours"
+            name: "Conference 2025",
+            desc: "Attend tech conference",
+            user_id: 2,
+            end_date: "2025-09-15",
+            location: "Berlin, Germany",
+            image_link: "https://via.placeholder.com/200?text=Conference+2025"
         },
         {
             id: 3,
-            name: "Certified Lover Boy",
-            artist_id: 3,
-            release_year: 2021,
-            number_of_listens: "2.1B",
-            image_link: "https://via.placeholder.com/200?text=CLB"
-        },
-        {
-            id: 4,
-            name: "Happier Than Ever",
-            artist_id: 4,
-            release_year: 2021,
-            number_of_listens: "1.9B",
-            image_link: "https://via.placeholder.com/200?text=Happier+Than+Ever"
-        },
-        {
-            id: 5,
-            name: "=",
-            artist_id: 5,
-            release_year: 2021,
-            number_of_listens: "2.7B",
-            image_link: "https://via.placeholder.com/200?text=Equals"
-        }
-    ],
-    songs: [
-        {
-            id: 1,
-            name: "Anti-Hero",
-            release_year: 2022,
-            album_id: 1,
-            artist_id: 1,
-            image_link: "https://via.placeholder.com/200?text=Anti-Hero"
-        },
-        {
-            id: 2,
-            name: "Blinding Lights",
-            release_year: 2020,
-            album_id: 2,
-            artist_id: 2,
-            image_link: "https://via.placeholder.com/200?text=Blinding+Lights"
-        },
-        {
-            id: 3,
-            name: "Way 2 Sexy",
-            release_year: 2021,
-            album_id: 3,
-            artist_id: 3,
-            image_link: "https://via.placeholder.com/200?text=Way+2+Sexy"
-        },
-        {
-            id: 4,
-            name: "Happier Than Ever",
-            release_year: 2021,
-            album_id: 4,
-            artist_id: 4,
-            image_link: "https://via.placeholder.com/200?text=Happier+Than+Ever+Song"
-        },
-        {
-            id: 5,
-            name: "Bad Habits",
-            release_year: 2021,
-            album_id: 5,
-            artist_id: 5,
-            image_link: "https://via.placeholder.com/200?text=Bad+Habits"
-        },
-        {
-            id: 6,
-            name: "Shivers",
-            release_year: 2021,
-            album_id: 5,
-            artist_id: 5,
-            image_link: "https://via.placeholder.com/200?text=Shivers"
+            name: "Family Reunion",
+            desc: "Gathering with extended family",
+            user_id: 3,
+            end_date: "2025-12-20",
+            location: "Dublin, Ireland",
+            image_link: "https://via.placeholder.com/200?text=Family+Reunion"
         }
     ]
 };

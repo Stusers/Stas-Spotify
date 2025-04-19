@@ -6,14 +6,12 @@ function AddButton({ type, onAdd, fields }) {
     const [formData, setFormData] = useState({});
 
     const handleOpenModal = () => {
-        setIsModalOpen(true);
-
-
         const initialData = {};
         fields.forEach(field => {
-            initialData[field.name] = field.type === 'number' ? '' : '';
+            initialData[field.name] = '';
         });
         setFormData(initialData);
+        setIsModalOpen(true);
     };
 
     const handleCloseModal = () => {
@@ -21,27 +19,29 @@ function AddButton({ type, onAdd, fields }) {
     };
 
     const handleChange = (e) => {
-        const { name, value, type } = e.target;
-        setFormData({
-            ...formData,
-            [name]: type === 'number' ? (value ? parseInt(value) : '') : value
-        });
+        const { name, value, type: inputType } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: inputType === 'number' ? (value === '' ? '' : parseInt(value, 10)) : value
+        }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-
-        const processedData = { ...formData };
+        // Ensure numeric fields are numbers
+        const processedData = {};
         fields.forEach(field => {
-            if (field.type === 'number' && processedData[field.name] !== '') {
-                processedData[field.name] = parseInt(processedData[field.name]);
+            const val = formData[field.name];
+            if (field.type === 'number') {
+                processedData[field.name] = val === '' ? null : Number(val);
+            } else {
+                processedData[field.name] = val;
             }
         });
 
         const success = await onAdd(type, processedData);
         if (success) {
-            setIsModalOpen(false);
+            handleCloseModal();
         }
     };
 
@@ -62,15 +62,14 @@ function AddButton({ type, onAdd, fields }) {
                         <form className="add-form" onSubmit={handleSubmit}>
                             {fields.map(field => (
                                 <div className="form-group" key={field.name}>
-                                    <label>
-                                        {field.name.split('_').map(word =>
-                                            word.charAt(0).toUpperCase() + word.slice(1)
-                                        ).join(' ')}
+                                    <label htmlFor={field.name}>
+                                        {field.name.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
                                         {field.required && <span className="required">*</span>}
                                     </label>
                                     <input
-                                        type={field.type === 'number' ? 'number' : 'text'}
+                                        id={field.name}
                                         name={field.name}
+                                        type={field.type}
                                         value={formData[field.name] || ''}
                                         onChange={handleChange}
                                         required={field.required}

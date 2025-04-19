@@ -1,4 +1,4 @@
-
+// components/DetailView.js
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './DetailView.css';
@@ -11,167 +11,142 @@ function DetailView({ type, data, onDelete, onUpdate }) {
     const [formData, setFormData] = useState({});
 
     useEffect(() => {
-        const foundItem = data.find(item => item.id === parseInt(id));
-        if (foundItem) {
-            setItem(foundItem);
-            setFormData(foundItem);
+        const found = data.find(d => d.id === parseInt(id, 10));
+        if (found) {
+            setItem(found);
+            setFormData({ ...found });
         }
     }, [id, data]);
 
-    const goBack = () => {
-        navigate('/');
-    };
+    const goBack = () => navigate('/');
 
     const handleDelete = () => {
-        if (window.confirm(`Are you sure you want to delete this ${type.slice(0, -1)}?`)) {
-            onDelete(type, parseInt(id));
+        if (window.confirm(`Delete this ${type.slice(0, -1)}?`)) {
+            onDelete(type, parseInt(id, 10));
             goBack();
         }
     };
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: name === 'monthly_listeners' || name === 'genre' || name === 'image_link' || name === 'number_of_listens'
-                ? value
-                : name === 'artist_id' || name === 'album_id' || name === 'release_year'
-                    ? parseInt(value)
-                    : value
-        });
+    const handleChange = e => {
+        const { name, value, type: inputType } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: inputType === 'number' ? (value === '' ? '' : parseInt(value, 10)) : value
+        }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async e => {
         e.preventDefault();
-        const success = await onUpdate(type, parseInt(id), formData);
+        const payload = { ...formData };
+        // convert empty strings for optional fields to null
+        Object.keys(payload).forEach(key => {
+            if (payload[key] === '') payload[key] = null;
+        });
+        const success = await onUpdate(type, parseInt(id, 10), payload);
         if (success) {
             setIsEditing(false);
-            setItem(formData);
+            setItem(payload);
         }
     };
 
-    if (!item) {
-        return <div className="detail-view">Item not found</div>;
-    }
+    if (!item) return <div className="detail-view">Not found</div>;
 
     return (
         <div className="detail-view">
-            <div className="detail-header">
-                <button className="back-button" onClick={goBack}>← Back</button>
-                <div className="detail-actions">
-                    <button
-                        className={`edit-button ${isEditing ? 'active' : ''}`}
-                        onClick={() => setIsEditing(!isEditing)}
-                    >
+            <header className="detail-header">
+                <button onClick={goBack} className="back-button">← Back</button>
+                <div>
+                    <button onClick={() => setIsEditing(!isEditing)} className="edit-button">
                         {isEditing ? 'Cancel' : 'Edit'}
                     </button>
-                    <button className="delete-button" onClick={handleDelete}>Delete</button>
+                    <button onClick={handleDelete} className="delete-button">Delete</button>
                 </div>
-            </div>
+            </header>
 
             <div className="detail-content">
-                <div className="detail-image">
+                <div className="image-container">
                     <img src={item.image_link || '/placeholder.jpg'} alt={item.name} />
                 </div>
 
                 {isEditing ? (
-                    <form className="edit-form" onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit} className="edit-form">
                         <div className="form-group">
                             <label>Name</label>
                             <input
-                                type="text"
                                 name="name"
+                                type="text"
                                 value={formData.name || ''}
                                 onChange={handleChange}
                                 required
                             />
                         </div>
 
-                        {type === 'artists' && (
+                        {type === 'logs' && (
                             <>
                                 <div className="form-group">
-                                    <label>Monthly Listeners</label>
-                                    <input
-                                        type="text"
-                                        name="monthly_listeners"
-                                        value={formData.monthly_listeners || ''}
+                                    <label>Description</label>
+                                    <textarea
+                                        name="logdesc"
+                                        value={formData.logdesc || ''}
                                         onChange={handleChange}
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Genre</label>
+                                    <label>Start Date</label>
                                     <input
-                                        type="text"
-                                        name="genre"
-                                        value={formData.genre || ''}
+                                        name="start_date"
+                                        type="date"
+                                        value={formData.start_date || ''}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>End Date</label>
+                                    <input
+                                        name="end_date"
+                                        type="date"
+                                        value={formData.end_date || ''}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Post Date-Time</label>
+                                    <input
+                                        name="post_date"
+                                        type="datetime-local"
+                                        value={formData.post_date || ''}
                                         onChange={handleChange}
                                     />
                                 </div>
                             </>
                         )}
 
-                        {type === 'albums' && (
+                        {type === 'plans' && (
                             <>
                                 <div className="form-group">
-                                    <label>Artist ID</label>
-                                    <input
-                                        type="number"
-                                        name="artist_id"
-                                        value={formData.artist_id || ''}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Release Year</label>
-                                    <input
-                                        type="number"
-                                        name="release_year"
-                                        value={formData.release_year || ''}
+                                    <label>Description</label>
+                                    <textarea
+                                        name="desc"
+                                        value={formData.desc || ''}
                                         onChange={handleChange}
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Number of Listens</label>
+                                    <label>End Date</label>
                                     <input
+                                        name="end_date"
+                                        type="date"
+                                        value={formData.end_date || ''}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Location</label>
+                                    <input
+                                        name="location"
                                         type="text"
-                                        name="number_of_listens"
-                                        value={formData.number_of_listens || ''}
+                                        value={formData.location || ''}
                                         onChange={handleChange}
-                                    />
-                                </div>
-                            </>
-                        )}
-
-                        {type === 'songs' && (
-                            <>
-                                <div className="form-group">
-                                    <label>Release Year</label>
-                                    <input
-                                        type="number"
-                                        name="release_year"
-                                        value={formData.release_year || ''}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Album ID</label>
-                                    <input
-                                        type="number"
-                                        name="album_id"
-                                        value={formData.album_id || ''}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Artist ID</label>
-                                    <input
-                                        type="number"
-                                        name="artist_id"
-                                        value={formData.artist_id || ''}
-                                        onChange={handleChange}
-                                        required
                                     />
                                 </div>
                             </>
@@ -180,39 +155,30 @@ function DetailView({ type, data, onDelete, onUpdate }) {
                         <div className="form-group">
                             <label>Image URL</label>
                             <input
-                                type="text"
                                 name="image_link"
+                                type="text"
                                 value={formData.image_link || ''}
                                 onChange={handleChange}
                             />
                         </div>
 
-                        <button type="submit" className="save-button">Save Changes</button>
+                        <button type="submit" className="save-button">Save</button>
                     </form>
                 ) : (
-                    <div className="detail-info">
+                    <div className="info-view">
                         <h1>{item.name}</h1>
-
-                        {type === 'artists' && (
+                        {type === 'logs' ? (
                             <>
-                                <p><span>Monthly Listeners:</span> {item.monthly_listeners}</p>
-                                <p><span>Genre:</span> {item.genre}</p>
+                                <p><strong>Description:</strong> {item.logdesc}</p>
+                                <p><strong>Start:</strong> {item.start_date}</p>
+                                <p><strong>End:</strong> {item.end_date}</p>
+                                <p><strong>Posted:</strong> {item.post_date}</p>
                             </>
-                        )}
-
-                        {type === 'albums' && (
+                        ) : (
                             <>
-                                <p><span>Artist ID:</span> {item.artist_id}</p>
-                                <p><span>Release Year:</span> {item.release_year}</p>
-                                <p><span>Listens:</span> {item.number_of_listens}</p>
-                            </>
-                        )}
-
-                        {type === 'songs' && (
-                            <>
-                                <p><span>Release Year:</span> {item.release_year}</p>
-                                <p><span>Album ID:</span> {item.album_id}</p>
-                                <p><span>Artist ID:</span> {item.artist_id}</p>
+                                <p><strong>Description:</strong> {item.desc}</p>
+                                <p><strong>Due:</strong> {item.end_date}</p>
+                                <p><strong>Location:</strong> {item.location}</p>
                             </>
                         )}
                     </div>
