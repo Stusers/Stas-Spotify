@@ -1,7 +1,25 @@
-// components/DetailView.js
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './DetailView.css';
+
+function formatDisplayValue(value, fieldName) {
+    if (!value) return '—';
+    const date = new Date(value);
+    const isTimeOnly = typeof value === 'string' && value.length <= 8;
+
+    if (fieldName.includes('date') || fieldName.includes('time')) {
+        if (isTimeOnly) {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        const datePart = date.toISOString().split('T')[0];
+        const timePart = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        return value.includes('T') ? `${datePart} ${timePart}` : datePart;
+    }
+
+    return value;
+}
 
 function DetailView({ type, data, onDelete, onUpdate }) {
     const { id } = useParams();
@@ -14,7 +32,15 @@ function DetailView({ type, data, onDelete, onUpdate }) {
         const found = data.find(d => d.id === parseInt(id, 10));
         if (found) {
             setItem(found);
-            setFormData({ ...found });
+            const formatted = {};
+            Object.entries(found).forEach(([key, val]) => {
+                if (key.includes('date') && val) {
+                    formatted[key] = new Date(val).toISOString().split('T')[0];
+                } else {
+                    formatted[key] = val ?? '';
+                }
+            });
+            setFormData(formatted);
         }
     }, [id, data]);
 
@@ -38,7 +64,6 @@ function DetailView({ type, data, onDelete, onUpdate }) {
     const handleSubmit = async e => {
         e.preventDefault();
         const payload = { ...formData };
-        // convert empty strings for optional fields to null
         Object.keys(payload).forEach(key => {
             if (payload[key] === '') payload[key] = null;
         });
@@ -50,6 +75,13 @@ function DetailView({ type, data, onDelete, onUpdate }) {
     };
 
     if (!item) return <div className="detail-view">Not found</div>;
+
+    const fields = Object.keys(item).filter(k => k !== 'id' && k !== 'user_id').map(key => ({
+        name: key,
+        label: `${key.replace(/_/g, ' ')}${key === 'name' ? ' *' : ''}`,
+        type: key.includes('date') ? 'date' : 'text',
+        required: key === 'name'
+    }));
 
     return (
         <div className="detail-view">
@@ -63,127 +95,34 @@ function DetailView({ type, data, onDelete, onUpdate }) {
                 </div>
             </header>
 
-            <div className="detail-content">
-                <div className="image-container">
-                    <img src={item.image_link || '/placeholder.jpg'} alt={item.name} />
+            {isEditing ? (
+                <form className="edit-form" onSubmit={handleSubmit}>
+                    {fields.map(field => (
+                        <div key={field.name} className="form-group">
+                            <label className={field.required ? 'required' : ''}>
+                                {field.label}
+                            </label>
+                            <input
+                                name={field.name}
+                                type={field.type}
+                                value={formData[field.name] ?? ''}
+                                onChange={handleChange}
+                                required={field.required}
+                            />
+                        </div>
+                    ))}
+                    <button type="submit" className="btn">Save</button>
+                </form>
+            ) : (
+                <div className="view-details styled-details">
+                    {fields.map(field => (
+                        <div key={field.name} className="detail-line">
+                            <span className="label">{field.label}:</span>
+                            <span className="value">{formatDisplayValue(item[field.name], field.name)}</span>
+                        </div>
+                    ))}
                 </div>
-
-                {isEditing ? (
-                    <form onSubmit={handleSubmit} className="edit-form">
-                        <div className="form-group">
-                            <label>Name</label>
-                            <input
-                                name="name"
-                                type="text"
-                                value={formData.name || ''}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-
-                        {type === 'logs' && (
-                            <>
-                                <div className="form-group">
-                                    <label>Description</label>
-                                    <textarea
-                                        name="logdesc"
-                                        value={formData.logdesc || ''}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Start Date</label>
-                                    <input
-                                        name="start_date"
-                                        type="date"
-                                        value={formData.start_date || ''}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>End Date</label>
-                                    <input
-                                        name="end_date"
-                                        type="date"
-                                        value={formData.end_date || ''}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Post Date-Time</label>
-                                    <input
-                                        name="post_date"
-                                        type="datetime-local"
-                                        value={formData.post_date || ''}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-                            </>
-                        )}
-
-                        {type === 'plans' && (
-                            <>
-                                <div className="form-group">
-                                    <label>Description</label>
-                                    <textarea
-                                        name="desc"
-                                        value={formData.desc || ''}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>End Date</label>
-                                    <input
-                                        name="end_date"
-                                        type="date"
-                                        value={formData.end_date || ''}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label>Location</label>
-                                    <input
-                                        name="location"
-                                        type="text"
-                                        value={formData.location || ''}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-                            </>
-                        )}
-
-                        <div className="form-group">
-                            <label>Image URL</label>
-                            <input
-                                name="image_link"
-                                type="text"
-                                value={formData.image_link || ''}
-                                onChange={handleChange}
-                            />
-                        </div>
-
-                        <button type="submit" className="save-button">Save</button>
-                    </form>
-                ) : (
-                    <div className="info-view">
-                        <h1>{item.name}</h1>
-                        {type === 'logs' ? (
-                            <>
-                                <p><strong>Description:</strong> {item.logdesc}</p>
-                                <p><strong>Start:</strong> {item.start_date}</p>
-                                <p><strong>End:</strong> {item.end_date}</p>
-                                <p><strong>Posted:</strong> {item.post_date}</p>
-                            </>
-                        ) : (
-                            <>
-                                <p><strong>Description:</strong> {item.desc}</p>
-                                <p><strong>Due:</strong> {item.end_date}</p>
-                                <p><strong>Location:</strong> {item.location}</p>
-                            </>
-                        )}
-                    </div>
-                )}
-            </div>
+            )}
         </div>
     );
 }

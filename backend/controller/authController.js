@@ -1,8 +1,11 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import db from '../config/dbConfig.js';
+import dotenv from "dotenv";
 
-env; // ensure dotenv in server.js loads JWT_SECRET
+dotenv.config();
+
+
 
 // User registration
 export const register = async (req, res) => {

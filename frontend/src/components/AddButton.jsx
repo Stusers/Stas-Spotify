@@ -28,7 +28,17 @@ function AddButton({ type, onAdd, fields }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // Ensure numeric fields are numbers
+
+        // ✅ Validate required fields
+        const missingFields = fields.filter(
+            (field) => field.required && !formData[field.name]?.toString().trim()
+        );
+
+        if (missingFields.length > 0) {
+            alert(`Please fill in the required field(s): ${missingFields.map(f => f.label).join(', ')}`);
+            return;
+        }
+
         const processedData = {};
         fields.forEach(field => {
             const val = formData[field.name];
@@ -40,9 +50,7 @@ function AddButton({ type, onAdd, fields }) {
         });
 
         const success = await onAdd(type, processedData);
-        if (success) {
-            handleCloseModal();
-        }
+        if (success) handleCloseModal();
     };
 
     return (
@@ -61,30 +69,20 @@ function AddButton({ type, onAdd, fields }) {
 
                         <form className="add-form" onSubmit={handleSubmit}>
                             {fields.map(field => (
-                                <div className="form-group" key={field.name}>
-                                    <label htmlFor={field.name}>
-                                        {field.name.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
-                                        {field.required && <span className="required">*</span>}
+                                <div key={field.name} className="form-group">
+                                    <label className={field.required ? 'required' : ''}>
+                                        {field.label}
                                     </label>
                                     <input
-                                        id={field.name}
                                         name={field.name}
                                         type={field.type}
-                                        value={formData[field.name] || ''}
+                                        value={formData[field.name]}
                                         onChange={handleChange}
                                         required={field.required}
                                     />
                                 </div>
                             ))}
-
-                            <div className="form-actions">
-                                <button type="button" className="cancel-button" onClick={handleCloseModal}>
-                                    Cancel
-                                </button>
-                                <button type="submit" className="submit-button">
-                                    Add {type.slice(0, -1)}
-                                </button>
-                            </div>
+                            <button type="submit" className="btn">Submit</button>
                         </form>
                     </div>
                 </div>

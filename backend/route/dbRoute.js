@@ -26,12 +26,16 @@ router.get("/users/:id", GetUser);
 
 router.get("/users/:userId/logs", GetLogsByUserId);
 router.post("/users/:userId/logs", CreateLog);
-router.put("/logs/:id", UpdateLog);
+
 router.delete("/logs/:id", DeleteLog);
 
 router.get("/users/:userId/plans", GetPlansByUserId);
 router.post("/users/:userId/plans", CreatePlan);
-router.put("/plans/:id", UpdatePlan);
+
 router.delete("/plans/:id", DeletePlan);
+
+router.put("/users/:userId/logs/:id", UpdateLog);
+router.put("/users/:userId/plans/:id", UpdatePlan);
+
 
 export default router;
