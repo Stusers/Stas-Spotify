@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 import './AddButton.css';
 
 function AddButton({ type, onAdd, fields }) {
@@ -29,13 +30,12 @@ function AddButton({ type, onAdd, fields }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // ✅ Validate required fields
         const missingFields = fields.filter(
             (field) => field.required && !formData[field.name]?.toString().trim()
         );
 
         if (missingFields.length > 0) {
-            alert(`Please fill in the required field(s): ${missingFields.map(f => f.label).join(', ')}`);
+            toast.error(`Please fill in: ${missingFields.map(f => f.label).join(', ')}`);
             return;
         }
 

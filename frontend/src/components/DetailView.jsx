@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import './DetailView.css';
 
 function formatDisplayValue(value, fieldName) {
@@ -61,27 +62,62 @@ function DetailView({ type, data, onDelete, onUpdate }) {
         }));
     };
 
-    const handleSubmit = async e => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const payload = { ...formData };
-        Object.keys(payload).forEach(key => {
-            if (payload[key] === '') payload[key] = null;
+
+        const missingFields = ['name', 'desc', 'logdesc'].filter(
+            (key) => formData.hasOwnProperty(key) && !formData[key]?.toString().trim()
+        );
+
+        if (missingFields.length > 0) {
+            toast.error(`Please fill in: ${missingFields.join(', ')}`);
+            return;
+        }
+
+        const payload = {};
+        Object.entries(formData).forEach(([key, value]) => {
+            const trimmed = typeof value === 'string' ? value.trim() : value;
+            if (['desc', 'logdesc', 'name'].includes(key)) {
+                payload[key] = trimmed || '';
+            } else {
+                payload[key] = trimmed === '' ? null : trimmed;
+            }
         });
+
         const success = await onUpdate(type, parseInt(id, 10), payload);
+
         if (success) {
+            const updated = { ...item, ...payload };
+            const formatted = {};
+            Object.entries(updated).forEach(([key, val]) => {
+                if (key.includes('date') && val) {
+                    formatted[key] = new Date(val).toISOString().split('T')[0];
+                } else {
+                    formatted[key] = val ?? '';
+                }
+            });
+
+            setItem(updated);
+            setFormData(formatted);
             setIsEditing(false);
-            setItem(payload);
         }
     };
 
     if (!item) return <div className="detail-view">Not found</div>;
 
-    const fields = Object.keys(item).filter(k => k !== 'id' && k !== 'user_id').map(key => ({
-        name: key,
-        label: `${key.replace(/_/g, ' ')}${key === 'name' ? ' *' : ''}`,
-        type: key.includes('date') ? 'date' : 'text',
-        required: key === 'name'
-    }));
+    const fields = Object.keys(item)
+        .filter(k => k !== 'id' && k !== 'user_id')
+        .map(key => {
+            const label = key.replace(/_/g, ' ');
+            const typeAttr = key.includes('date') ? 'date' : 'text';
+            const isRequired = ['name', 'logdesc', 'desc'].includes(key);
+            return {
+                name: key,
+                label,
+                type: typeAttr,
+                required: isRequired
+            };
+        });
 
     return (
         <div className="detail-view">

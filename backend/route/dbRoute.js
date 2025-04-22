@@ -1,4 +1,3 @@
-// route/dbRoute.js
 import express from "express";
 import authenticate from "../config/auth.js";
 import {
@@ -16,10 +15,8 @@ import {
 
 const router = express.Router();
 
-// (Optional) allow public user creation
 router.post("/users", CreateUser);
 
-// All following routes require a valid JWT
 router.use(authenticate);
 
 router.get("/users/:id", GetUser);

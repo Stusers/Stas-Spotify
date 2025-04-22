@@ -65,13 +65,19 @@ export const CreateLog = async (req, res) => {
 // Update a log by ID
 export const UpdateLog = async (req, res) => {
     const { id } = req.params;
+    const userId = req.user.id;
     const { name, logdesc, start_date, end_date, post_date, image_link } = req.body;
+
     try {
         const [result] = await db.query(
-            "UPDATE logs SET name = ?, `desc` = ?, start_date = ?, end_date = ?, post_date = ?, image_link = ? WHERE id = ?",
-            [name, logdesc, start_date, end_date, post_date, image_link, id]
+            "UPDATE logs SET name = ?, `desc` = ?, start_date = ?, end_date = ?, post_date = ?, image_link = ? WHERE id = ? AND user_id = ?",
+            [name, logdesc, start_date, end_date, post_date, image_link, id, userId]
         );
-        if (result.affectedRows === 0) return res.status(404).json({ message: "Log not found" });
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Log not found or not owned by user" });
+        }
+
         res.json({ id: Number(id), name, logdesc, start_date, end_date, post_date, image_link });
     } catch (error) {
         console.error("Error updating log:", error);
@@ -123,22 +129,37 @@ export const CreatePlan = async (req, res) => {
     }
 };
 
-// Update a plan by ID
+// ✅ Update a plan by ID with fallback for desc
 export const UpdatePlan = async (req, res) => {
     const { id } = req.params;
-    const { name, desc, end_date, location, image_link } = req.body;
+    const userId = req.user.id;
+
+    const {
+        name = '',
+        desc = '',
+        end_date = null,
+        location = null,
+        image_link = null
+    } = req.body;
+
     try {
         const [result] = await db.query(
-            "UPDATE plans SET name = ?, `desc` = ?, end_date = ?, location = ?, image_link = ? WHERE id = ?",
-            [name, desc, end_date, location, image_link, id]
+            "UPDATE plans SET name = ?, `desc` = ?, end_date = ?, location = ?, image_link = ? WHERE id = ? AND user_id = ?",
+            [name.trim(), desc.trim(), end_date, location, image_link, id, userId]
         );
-        if (result.affectedRows === 0) return res.status(404).json({ message: "Plan not found" });
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Plan not found or not owned by user" });
+        }
+
         res.json({ id: Number(id), name, desc, end_date, location, image_link });
     } catch (error) {
         console.error("Error updating plan:", error);
         res.status(500).json({ message: "Error updating plan" });
     }
 };
+
+
 
 // Delete a plan by ID
 export const DeletePlan = async (req, res) => {

@@ -1,4 +1,3 @@
-// src/App.jsx
 import React, { useState, useEffect, useContext } from 'react';
 import {
     BrowserRouter,
@@ -102,7 +101,7 @@ function AppContent() {
         <>
             <header className="app-header">
                 <div className="logo-container">
-                    <img src="/logo.png" alt="App Logo" className="logo-image" />
+                    <img src="/dog.png.jpg" alt="App Logo" className="logo-image" />
                     <h1 className="logo-text">Logs & Plans Manager</h1>
                 </div>
                 <button onClick={logout} className="logout-button">Logout</button>
@@ -214,11 +213,13 @@ const DetailWrapper = ({ type }) => {
         navigate('/');
     };
 
-    const handleUpdate = async (id, data) => {
+    // ✅ Updated to accept type, id, and data
+    const handleUpdate = async (updateType, itemId, data) => {
         try {
-            await axios.put(`/api/users/${userId}/${type}/${id}`, data);
+            await axios.put(`/api/users/${userId}/${updateType}/${itemId}`, data);
             return true;
-        } catch {
+        } catch (err) {
+            console.error("Update failed:", err.response?.data || err.message);
             return false;
         }
     };
