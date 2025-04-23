@@ -130,8 +130,8 @@ const populateDatabase = async () => {
 };
 
 // Run only in dev
-await resetDatabase();
-await populateDatabase();
+//await resetDatabase();
+//await populateDatabase();
 
 // Root endpoint
 app.get("/", (req, res) => {
